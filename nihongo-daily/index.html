@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nihongo Daily Assistant</title>
+  <!-- Google Fonts: Noto Sans + Noto Serif JP -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════════════════════
+       TOP NAVBAR (desktop)
+  ═══════════════════════════════════════════════════════ -->
+  <nav class="top-nav">
+    <div class="container nav-inner">
+      <a href="index.html" class="logo">日本語 <span>Nihongo Daily</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html"    class="nav-link" data-page="index.html">🏠 Home</a></li>
+        <li><a href="materi.html"   class="nav-link" data-page="materi.html">📚 Materi</a></li>
+        <li><a href="ai.html"       class="nav-link" data-page="ai.html">🤖 AI Assistant</a></li>
+        <li><a href="quiz.html"     class="nav-link" data-page="quiz.html">✏️ Quiz</a></li>
+        <li><a href="progress.html" class="nav-link" data-page="progress.html">📊 Progress</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════════
+       MAIN CONTENT
+  ═══════════════════════════════════════════════════════ -->
+  <main class="container page-content">
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="wod-label">Nihongo Daily Assistant</div>
+      <h1 class="hero-title">日本語を学ぼう！</h1>
+      <p class="hero-subtitle">Platform belajar bahasa Jepang interaktif<br>untuk pemula hingga menengah</p>
+      <a href="materi.html" class="btn btn-primary" style="font-size:1.05rem;padding:.75rem 2rem;">
+        🚀 Mulai Belajar
+      </a>
+    </section>
+
+    <!-- Streak -->
+    <div class="text-center mb-2">
+      <div class="streak-badge" id="streak-badge">
+        <span class="streak-fire">🔥</span>
+        <span id="streak-count">0</span> hari berturut-turut
+      </div>
+    </div>
+
+    <!-- Kata Hari Ini -->
+    <div class="wod-card mb-2">
+      <div class="wod-label">✨ Kata Hari Ini</div>
+      <div class="wod-jp"  id="wod-jp">—</div>
+      <div class="wod-rom" id="wod-rom"></div>
+      <div class="wod-arti" id="wod-arti"></div>
+      <div class="wod-contoh" id="wod-contoh"></div>
+    </div>
+
+    <!-- Quick Links -->
+    <div class="section-header">
+      <span class="section-title">📌 Mulai dari Sini</span>
+    </div>
+    <div class="quick-links">
+      <a href="materi.html?level=pemula&tab=hiragana" class="quick-link-card">
+        <span class="quick-link-icon">あ</span>
+        <span class="quick-link-title">Hiragana</span>
+        <span class="quick-link-sub">46 karakter dasar</span>
+      </a>
+      <a href="materi.html?level=pemula&tab=katakana" class="quick-link-card">
+        <span class="quick-link-icon">ア</span>
+        <span class="quick-link-title">Katakana</span>
+        <span class="quick-link-sub">46 karakter serapan</span>
+      </a>
+      <a href="ai.html" class="quick-link-card">
+        <span class="quick-link-icon">🤖</span>
+        <span class="quick-link-title">AI Tutor</span>
+        <span class="quick-link-sub">Tanya apa saja</span>
+      </a>
+      <a href="quiz.html" class="quick-link-card">
+        <span class="quick-link-icon">✏️</span>
+        <span class="quick-link-title">Quiz</span>
+        <span class="quick-link-sub">Uji kemampuanmu</span>
+      </a>
+    </div>
+
+    <!-- Info singkat -->
+    <hr class="divider mt-3" />
+    <div class="card mt-2" style="font-size:.9rem;color:var(--color-muted);">
+      <b style="color:var(--color-text)">ℹ️ Cara Belajar</b>
+      <ol style="margin-top:.5rem;padding-left:1.2rem;line-height:2;">
+        <li>Pelajari <b>Hiragana &amp; Katakana</b> terlebih dahulu di menu Materi.</li>
+        <li>Tandai materi yang sudah kamu selesaikan.</li>
+        <li>Tanya <b>AI Tutor</b> kapan pun kamu bingung.</li>
+        <li>Uji dirimu di menu <b>Quiz</b> dan pantau perkembangan di <b>Progress</b>.</li>
+      </ol>
+      <p style="margin-top:.5rem;margin-bottom:0">
+        💾 Data tersimpan di browser ini. Gunakan <a href="progress.html"><b>Ekspor Progress</b></a> sebagai cadangan.
+      </p>
+    </div>
+
+  </main>
+
+  <!-- ═══════════════════════════════════════════════════════
+       BOTTOM NAV (mobile)
+  ═══════════════════════════════════════════════════════ -->
+  <nav class="bottom-nav">
+    <a href="index.html"    class="nav-link"><span class="nav-icon">🏠</span>Home</a>
+    <a href="materi.html"   class="nav-link"><span class="nav-icon">📚</span>Materi</a>
+    <a href="ai.html"       class="nav-link"><span class="nav-icon">🤖</span>AI</a>
+    <a href="quiz.html"     class="nav-link"><span class="nav-icon">✏️</span>Quiz</a>
+    <a href="progress.html" class="nav-link"><span class="nav-icon">📊</span>Progress</a>
+  </nav>
+
+  <!-- Toast container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Scripts (order matters: data → storage → config → app) -->
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="config.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // ── Home page init ─────────────────────────────────────
+    (function () {
+      // Perbarui streak
+      perbaruiStreak();
+
+      // Tampilkan streak
+      document.getElementById("streak-count").textContent = getStreak();
+
+      // Kata hari ini
+      const wod = getWordOfDay();
+      document.getElementById("wod-jp").textContent   = wod.jp;
+      document.getElementById("wod-rom").textContent  = wod.romaji;
+      document.getElementById("wod-arti").textContent = wod.arti;
+      if (wod.contoh) {
+        document.getElementById("wod-contoh").innerHTML =
+          `<span style="font-family:var(--font-jp)">${wod.contoh}</span><br>` +
+          `<span style="color:var(--color-accent);font-style:italic;font-size:.85rem">${wod.contohRomaji || ""}</span><br>` +
+          `<span style="color:var(--color-muted);font-size:.85rem">${wod.contohArti || ""}</span>`;
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz — Nihongo Daily</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- TOP NAV -->
+  <nav class="top-nav">
+    <div class="container nav-inner">
+      <a href="index.html" class="logo">日本語 <span>Nihongo Daily</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html"    class="nav-link">🏠 Home</a></li>
+        <li><a href="materi.html"   class="nav-link">📚 Materi</a></li>
+        <li><a href="ai.html"       class="nav-link">🤖 AI Assistant</a></li>
+        <li><a href="quiz.html"     class="nav-link">✏️ Quiz</a></li>
+        <li><a href="progress.html" class="nav-link">📊 Progress</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="container page-content">
+
+    <!-- ── LAYAR 1: PILIH QUIZ ──────────────────────────── -->
+    <div id="screen-select">
+      <h1 style="font-size:1.4rem;margin-bottom:1rem">✏️ Quiz</h1>
+
+      <!-- Filter Level -->
+      <div class="section-header mb-1">
+        <span class="section-title" style="font-size:1rem">Level</span>
+      </div>
+      <div class="filter-bar" id="filter-level">
+        <button class="filter-btn active" data-level="semua">Semua</button>
+        <button class="filter-btn" data-level="pemula">🟢 Pemula</button>
+        <button class="filter-btn" data-level="menengah">🟣 Menengah</button>
+      </div>
+
+      <!-- Filter Kategori -->
+      <div class="section-header mb-1 mt-2">
+        <span class="section-title" style="font-size:1rem">Kategori</span>
+      </div>
+      <div class="filter-bar" id="filter-kategori">
+        <button class="filter-btn active" data-kat="semua">Semua</button>
+        <button class="filter-btn" data-kat="hiragana">Hiragana</button>
+        <button class="filter-btn" data-kat="katakana">Katakana</button>
+        <button class="filter-btn" data-kat="kosakata">Kosakata</button>
+        <button class="filter-btn" data-kat="salam">Salam</button>
+        <button class="filter-btn" data-kat="tata bahasa">Tata Bahasa</button>
+        <button class="filter-btn" data-kat="kanji">Kanji</button>
+      </div>
+
+      <!-- Info soal -->
+      <div class="card mt-2 mb-2" style="font-size:.9rem;color:var(--color-muted)">
+        <span id="soal-count">Tersedia <b>30</b> soal</span> sesuai filter.
+        Kuis akan menampilkan hingga <b>10 soal acak</b>.
+      </div>
+
+      <button class="btn btn-primary w-full" id="btn-mulai" style="font-size:1.05rem;padding:.75rem">
+        🚀 Mulai Quiz
+      </button>
+    </div>
+
+    <!-- ── LAYAR 2: SOAL QUIZ ────────────────────────────── -->
+    <div id="screen-quiz" class="hidden">
+
+      <!-- Progress bar -->
+      <div class="flex items-center justify-between mb-1" style="font-size:.9rem">
+        <span id="q-index-label" style="color:var(--color-muted)">Soal 1 / 10</span>
+        <span id="q-skor-label" style="font-weight:700;color:var(--color-accent)">Skor: 0</span>
+      </div>
+      <div class="quiz-progress-bar mb-2">
+        <div class="quiz-progress-fill" id="quiz-prog-fill" style="width:10%"></div>
+      </div>
+
+      <!-- Pertanyaan -->
+      <div class="quiz-question-card" id="quiz-question-card">
+        <div class="quiz-hint" id="quiz-kategori-hint"></div>
+        <div class="quiz-jp"  id="quiz-jp-text"></div>
+        <div id="quiz-question-text" style="font-size:1rem;margin-top:.5rem;color:var(--color-text)"></div>
+      </div>
+
+      <!-- Pilihan jawaban -->
+      <div class="quiz-options" id="quiz-options"></div>
+
+      <!-- Penjelasan (tampil setelah jawab) -->
+      <div class="quiz-explanation hidden" id="quiz-explanation"></div>
+
+      <!-- Tombol lanjut -->
+      <div class="mt-2 text-center">
+        <button class="btn btn-primary hidden" id="btn-next" style="min-width:150px">
+          Soal Berikutnya →
+        </button>
+      </div>
+    </div>
+
+    <!-- ── LAYAR 3: HASIL QUIZ ───────────────────────────── -->
+    <div id="screen-result" class="hidden">
+      <div class="quiz-result-card">
+        <div style="font-size:3rem;margin-bottom:.5rem" id="result-emoji">🎉</div>
+        <div class="quiz-result-score" id="result-score">8 / 10</div>
+        <div style="font-size:1.2rem;color:var(--color-muted);margin-bottom:.5rem" id="result-pct">80%</div>
+        <div id="result-msg" style="font-size:1rem;margin-bottom:1.5rem;color:var(--color-text)"></div>
+
+        <!-- Ringkasan jawaban -->
+        <div id="result-summary" style="text-align:left;margin-bottom:1.5rem"></div>
+
+        <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap">
+          <button class="btn btn-primary"   id="btn-ulangi">🔄 Ulangi Quiz</button>
+          <button class="btn btn-secondary" id="btn-ganti-soal">Ganti Soal</button>
+          <a href="progress.html" class="btn btn-ghost">📊 Progress</a>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <a href="index.html"    class="nav-link"><span class="nav-icon">🏠</span>Home</a>
+    <a href="materi.html"   class="nav-link"><span class="nav-icon">📚</span>Materi</a>
+    <a href="ai.html"       class="nav-link"><span class="nav-icon">🤖</span>AI</a>
+    <a href="quiz.html"     class="nav-link"><span class="nav-icon">✏️</span>Quiz</a>
+    <a href="progress.html" class="nav-link"><span class="nav-icon">📊</span>Progress</a>
+  </nav>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="config.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+  // ══════════════════════════════════════════════════════════
+  //  quiz.html — logic halaman
+  // ══════════════════════════════════════════════════════════
+
+  // ─── State ────────────────────────────────────────────────
+  let quizSoal     = [];   // soal yang dipilih sesi ini
+  let quizIndex    = 0;    // indeks soal saat ini
+  let quizSkor     = 0;    // jumlah jawaban benar
+  let quizHistory  = [];   // [{soal, pilihanUser, benar}]
+  let filterLevel  = "semua";
+  let filterKat    = "semua";
+  let answered     = false;
+
+  // ─── Helper: tampilkan toast ──────────────────────────────
+  function showToast(msg) {
+    const c = document.getElementById("toast-container");
+    const t = document.createElement("div");
+    t.className = "toast";
+    t.textContent = msg;
+    c.appendChild(t);
+    setTimeout(() => t.remove(), 2800);
+  }
+
+  // ─── Helper: acak array (Fisher-Yates) ───────────────────
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  // ─── Filter soal ──────────────────────────────────────────
+  function getFilteredSoal() {
+    return DATA_QUIZ.filter(q => {
+      const matchLevel = filterLevel === "semua" || q.level === filterLevel;
+      const matchKat   = filterKat === "semua"   || q.kategori === filterKat;
+      return matchLevel && matchKat;
+    });
+  }
+
+  function updateSoalCount() {
+    const n = getFilteredSoal().length;
+    document.getElementById("soal-count").innerHTML =
+      `Tersedia <b>${n}</b> soal`;
+    document.getElementById("btn-mulai").disabled = n === 0;
+  }
+
+  // ─── Filter button handlers ───────────────────────────────
+  document.querySelectorAll("#filter-level .filter-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("#filter-level .filter-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      filterLevel = btn.dataset.level;
+      updateSoalCount();
+    });
+  });
+  document.querySelectorAll("#filter-kategori .filter-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("#filter-kategori .filter-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      filterKat = btn.dataset.kat;
+      updateSoalCount();
+    });
+  });
+
+  // ─── Mulai quiz ───────────────────────────────────────────
+  document.getElementById("btn-mulai").addEventListener("click", startQuiz);
+
+  function startQuiz() {
+    const filtered = getFilteredSoal();
+    if (!filtered.length) { showToast("Tidak ada soal untuk filter ini."); return; }
+    quizSoal    = shuffle(filtered).slice(0, 10);
+    quizIndex   = 0;
+    quizSkor    = 0;
+    quizHistory = [];
+    showScreen("screen-quiz");
+    renderQuestion();
+  }
+
+  // ─── Render soal ──────────────────────────────────────────
+  function renderQuestion() {
+    answered = false;
+    const soal = quizSoal[quizIndex];
+    const total = quizSoal.length;
+
+    // Progress
+    document.getElementById("q-index-label").textContent = `Soal ${quizIndex + 1} / ${total}`;
+    document.getElementById("q-skor-label").textContent  = `Skor: ${quizSkor}`;
+    document.getElementById("quiz-prog-fill").style.width = `${((quizIndex + 1) / total) * 100}%`;
+
+    // Pertanyaan
+    document.getElementById("quiz-kategori-hint").textContent =
+      soal.kategori.charAt(0).toUpperCase() + soal.kategori.slice(1) +
+      " • " + soal.level.charAt(0).toUpperCase() + soal.level.slice(1);
+
+    // Jika pertanyaan mengandung huruf Jepang besar → taruh di jp-text
+    if (soal.tipe === "tebak_karakter" || /[\u3040-\u9FFF]/.test(soal.pertanyaan)) {
+      document.getElementById("quiz-jp-text").textContent  = "";
+      document.getElementById("quiz-question-text").textContent = soal.pertanyaan;
+    } else {
+      document.getElementById("quiz-jp-text").textContent  = "";
+      document.getElementById("quiz-question-text").textContent = soal.pertanyaan;
+    }
+
+    // Pilihan — acak urutannya agar tidak tertebak
+    const pilihanAcak = shuffle(soal.pilihan);
+    const optionsEl = document.getElementById("quiz-options");
+    optionsEl.innerHTML = "";
+    pilihanAcak.forEach(pilihan => {
+      const btn = document.createElement("button");
+      btn.className = "quiz-option";
+      btn.textContent = pilihan;
+      btn.dataset.value = pilihan;
+      btn.addEventListener("click", () => {
+        if (answered) return;
+        pilihJawaban(pilihan);
+      });
+      optionsEl.appendChild(btn);
+    });
+
+    // Sembunyikan elemen result sebelumnya
+    document.getElementById("quiz-explanation").classList.add("hidden");
+    document.getElementById("btn-next").classList.add("hidden");
+  }
+
+  // ─── Pilih jawaban ────────────────────────────────────────
+  function pilihJawaban(pilihan) {
+    answered = true;
+    const soal  = quizSoal[quizIndex];
+    const benar = pilihan === soal.jawaban;
+    if (benar) quizSkor++;
+
+    // Tandai option benar/salah
+    document.querySelectorAll(".quiz-option").forEach(btn => {
+      btn.disabled = true;
+      if (btn.dataset.value === soal.jawaban) {
+        btn.classList.add("correct");
+      } else if (btn.dataset.value === pilihan && !benar) {
+        btn.classList.add("wrong");
+      }
+    });
+
+    // Tampilkan penjelasan
+    const expEl = document.getElementById("quiz-explanation");
+    expEl.innerHTML = `${benar ? "✅ Benar!" : "❌ Salah."} ${soal.penjelasan}`;
+    expEl.classList.remove("hidden");
+
+    // Simpan ke riwayat
+    quizHistory.push({ soal, pilihanUser: pilihan, benar });
+
+    // Tampilkan tombol lanjut
+    const nextBtn = document.getElementById("btn-next");
+    nextBtn.classList.remove("hidden");
+    if (quizIndex >= quizSoal.length - 1) {
+      nextBtn.textContent = "Lihat Hasil 🏆";
+    } else {
+      nextBtn.textContent = "Soal Berikutnya →";
+    }
+  }
+
+  // ─── Tombol lanjut ────────────────────────────────────────
+  document.getElementById("btn-next").addEventListener("click", () => {
+    quizIndex++;
+    if (quizIndex >= quizSoal.length) {
+      selesaiQuiz();
+    } else {
+      renderQuestion();
+    }
+  });
+
+  // ─── Selesai quiz ─────────────────────────────────────────
+  function selesaiQuiz() {
+    const total = quizSoal.length;
+    const pct   = Math.round((quizSkor / total) * 100);
+
+    // Simpan ke storage
+    simpanHasilKuis(filterLevel, filterKat, quizSkor, total);
+
+    // Tampilan hasil
+    document.getElementById("result-score").textContent = `${quizSkor} / ${total}`;
+    document.getElementById("result-pct").textContent   = pct + "%";
+
+    let emoji = "😢", msg = "Jangan menyerah! Baca lagi materinya ya.";
+    if (pct >= 90) { emoji = "🏆"; msg = "Luar biasa! Nilai sempurna! よくできました！"; }
+    else if (pct >= 70) { emoji = "🎉"; msg = "Bagus! Terus semangat belajar!"; }
+    else if (pct >= 50) { emoji = "😊"; msg = "Cukup baik! Masih ada ruang untuk berkembang."; }
+    document.getElementById("result-emoji").textContent = emoji;
+    document.getElementById("result-msg").textContent   = msg;
+
+    // Ringkasan per soal
+    const sumEl = document.getElementById("result-summary");
+    sumEl.innerHTML = "<b>Ringkasan Jawaban:</b>";
+    quizHistory.forEach((h, i) => {
+      const item = document.createElement("div");
+      item.style.cssText = "padding:.5rem .75rem;margin:.35rem 0;border-radius:8px;font-size:.88rem;border:1px solid var(--color-border)";
+      item.style.background = h.benar ? "#f0fdf4" : "#fff1f2";
+      item.innerHTML = `
+        <div style="display:flex;gap:.4rem;align-items:baseline">
+          <b>${i + 1}.</b>
+          <span>${h.soal.pertanyaan}</span>
+        </div>
+        <div style="margin-top:.2rem">
+          ${h.benar ? "✅" : "❌"} Jawabanmu: <b>${h.pilihanUser}</b>
+          ${!h.benar ? ` | Benar: <b style="color:var(--color-success)">${h.soal.jawaban}</b>` : ""}
+        </div>`;
+      sumEl.appendChild(item);
+    });
+
+    showScreen("screen-result");
+  }
+
+  // ─── Ulangi dengan soal yang sama ────────────────────────
+  document.getElementById("btn-ulangi").addEventListener("click", () => {
+    quizSoal    = shuffle(quizSoal);
+    quizIndex   = 0;
+    quizSkor    = 0;
+    quizHistory = [];
+    showScreen("screen-quiz");
+    renderQuestion();
+  });
+
+  // ─── Ganti soal (kembali ke layar pilih) ─────────────────
+  document.getElementById("btn-ganti-soal").addEventListener("click", () => {
+    showScreen("screen-select");
+  });
+
+  // ─── Ganti layar ──────────────────────────────────────────
+  function showScreen(id) {
+    ["screen-select", "screen-quiz", "screen-result"].forEach(s => {
+      document.getElementById(s).classList.toggle("hidden", s !== id);
+    });
+  }
+
+  // ─── Init ─────────────────────────────────────────────────
+  updateSoalCount();
+  </script>
+</body>
+</html>

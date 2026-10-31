@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Assistant — Nihongo Daily</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* Halaman AI memakai layout full-height */
+    .ai-page {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - var(--nav-height-bottom));
+      overflow: hidden;
+    }
+    @media (min-width: 768px) {
+      .ai-page { height: calc(100vh - var(--nav-height-top)); }
+    }
+
+    .ai-header {
+      padding: .75rem 1rem;
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--color-bg);
+      flex-shrink: 0;
+    }
+    .ai-header-left { display: flex; align-items: center; gap: .6rem; }
+    .ai-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--color-surface);
+      border: 2px solid var(--color-accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+    }
+    .ai-title { font-weight: 700; font-size: 1rem; }
+    .ai-subtitle { font-size: .78rem; color: var(--color-muted); }
+
+    .ai-mode-badge {
+      font-size: .75rem;
+      padding: .2rem .55rem;
+      border-radius: 99px;
+      background: var(--color-surface);
+      color: var(--color-accent);
+      border: 1px solid var(--color-border);
+    }
+
+    /* Quick prompt chips */
+    .quick-chips {
+      display: flex;
+      gap: .4rem;
+      flex-wrap: wrap;
+      padding: .65rem 1rem;
+      border-bottom: 1px solid var(--color-border);
+      background: var(--color-bg);
+      flex-shrink: 0;
+    }
+    .chip {
+      padding: .3rem .75rem;
+      border-radius: 99px;
+      border: 1px solid var(--color-border);
+      background: var(--color-surface2);
+      font-size: .8rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background .15s, border-color .15s;
+      color: var(--color-text);
+    }
+    .chip:hover { background: var(--color-surface); border-color: var(--color-accent); color: var(--color-accent); }
+  </style>
+</head>
+<body>
+
+  <!-- TOP NAV -->
+  <nav class="top-nav">
+    <div class="container nav-inner">
+      <a href="index.html" class="logo">日本語 <span>Nihongo Daily</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html"    class="nav-link">🏠 Home</a></li>
+        <li><a href="materi.html"   class="nav-link">📚 Materi</a></li>
+        <li><a href="ai.html"       class="nav-link">🤖 AI Assistant</a></li>
+        <li><a href="quiz.html"     class="nav-link">✏️ Quiz</a></li>
+        <li><a href="progress.html" class="nav-link">📊 Progress</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- AI PAGE WRAPPER -->
+  <div class="ai-page container" style="padding-left:0;padding-right:0;max-width:100%">
+
+    <!-- Header -->
+    <div class="ai-header">
+      <div class="ai-header-left">
+        <div class="ai-avatar">🤖</div>
+        <div>
+          <div class="ai-title">Sensei AI</div>
+          <div class="ai-subtitle">Tutor Bahasa Jepang</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:.5rem">
+        <span class="ai-mode-badge" id="mode-badge">Mode: Lokal</span>
+        <button class="chat-clear-btn" id="btn-clear" title="Hapus semua chat">🗑️</button>
+      </div>
+    </div>
+
+    <!-- Quick prompt chips -->
+    <div class="quick-chips" id="quick-chips">
+      <button class="chip" data-prompt="Hiragana apa itu?">あ Hiragana</button>
+      <button class="chip" data-prompt="Arti taberu">食べる artinya</button>
+      <button class="chip" data-prompt="Jelaskan te-form">て-form</button>
+      <button class="chip" data-prompt="Daftar salam Jepang">Salam</button>
+      <button class="chip" data-prompt="Angka dalam bahasa Jepang">Angka</button>
+      <button class="chip" data-prompt="Jelaskan partikel wa dan ga">は vs が</button>
+      <button class="chip" data-prompt="Contoh kalimat desu">Contoh desu</button>
+      <button class="chip" data-prompt="Kanji dasar">Kanji</button>
+    </div>
+
+    <!-- Chat area -->
+    <div style="flex:1;overflow:hidden;display:flex;flex-direction:column;padding:.75rem;max-width:860px;margin:0 auto;width:100%">
+      <div class="chat-messages" id="chat-messages"></div>
+
+      <!-- Input bar -->
+      <div class="chat-input-bar">
+        <textarea
+          id="chat-input"
+          class="chat-input"
+          placeholder="Tanya apa saja tentang bahasa Jepang…"
+          rows="1"
+          autocomplete="off"
+        ></textarea>
+        <button class="btn btn-primary btn-icon" id="btn-send" title="Kirim">
+          ➤
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <a href="index.html"    class="nav-link"><span class="nav-icon">🏠</span>Home</a>
+    <a href="materi.html"   class="nav-link"><span class="nav-icon">📚</span>Materi</a>
+    <a href="ai.html"       class="nav-link"><span class="nav-icon">🤖</span>AI</a>
+    <a href="quiz.html"     class="nav-link"><span class="nav-icon">✏️</span>Quiz</a>
+    <a href="progress.html" class="nav-link"><span class="nav-icon">📊</span>Progress</a>
+  </nav>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="config.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+  // ══════════════════════════════════════════════════════════
+  //  ai.html — chat logic
+  // ══════════════════════════════════════════════════════════
+
+  const messagesEl  = document.getElementById("chat-messages");
+  const inputEl     = document.getElementById("chat-input");
+  const sendBtn     = document.getElementById("btn-send");
+  const clearBtn    = document.getElementById("btn-clear");
+  const modeBadgeEl = document.getElementById("mode-badge");
+
+  // ─── Simpan histori chat di session (bersih saat tab ditutup) ─
+  // Tidak disimpan ke localStorage agar privat.
+  let chatHistory = [];
+
+  // ─── Update mode badge ────────────────────────────────────
+  if (typeof CONFIG !== "undefined" && CONFIG.API_KEY) {
+    modeBadgeEl.textContent = "Mode: " + (CONFIG.PROVIDER === "gemini" ? "Gemini" : "OpenAI");
+    modeBadgeEl.style.background = "#d1fae5";
+    modeBadgeEl.style.color = "#065f46";
+  }
+
+  // ─── Tambahkan bubble ke chat ─────────────────────────────
+  function addBubble(role, htmlContent) {
+    const wrap = document.createElement("div");
+    wrap.className = "bubble-wrap " + role;
+
+    const avatar = document.createElement("div");
+    avatar.className = "bubble-avatar";
+    avatar.textContent = role === "ai" ? "🤖" : "👤";
+
+    const bubble = document.createElement("div");
+    bubble.className = "bubble " + role;
+    bubble.innerHTML = htmlContent;
+
+    wrap.appendChild(avatar);
+    wrap.appendChild(bubble);
+    messagesEl.appendChild(wrap);
+    // Scroll ke bawah
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    return wrap;
+  }
+
+  // ─── Tampilkan indikator mengetik ─────────────────────────
+  function showTyping() {
+    const wrap = document.createElement("div");
+    wrap.className = "bubble-wrap ai";
+    wrap.id = "typing-indicator";
+    wrap.innerHTML = `
+      <div class="bubble-avatar">🤖</div>
+      <div class="bubble ai bubble-typing">
+        <span></span><span></span><span></span>
+      </div>`;
+    messagesEl.appendChild(wrap);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function hideTyping() {
+    document.getElementById("typing-indicator")?.remove();
+  }
+
+  // ─── Kirim pesan ──────────────────────────────────────────
+  async function sendMessage(text) {
+    const msg = (text || inputEl.value).trim();
+    if (!msg) return;
+
+    inputEl.value = "";
+    inputEl.style.height = "auto";
+    inputEl.focus();
+
+    // Tampilkan bubble user
+    addBubble("user", escapeHTML(msg));
+    chatHistory.push({ role: "user", content: msg });
+
+    // Nonaktifkan tombol kirim
+    sendBtn.disabled = true;
+
+    // Typing indicator
+    showTyping();
+
+    // Proses AI (async)
+    try {
+      const response = await processAIInput(msg);
+      hideTyping();
+      addBubble("ai", response);
+      chatHistory.push({ role: "ai", content: response });
+    } catch (e) {
+      hideTyping();
+      addBubble("ai", "⚠️ Terjadi kesalahan. Silakan coba lagi.");
+      console.error(e);
+    } finally {
+      sendBtn.disabled = false;
+    }
+  }
+
+  // ─── Event: tombol kirim ──────────────────────────────────
+  sendBtn.addEventListener("click", () => sendMessage());
+
+  // ─── Event: Enter kirim, Shift+Enter baris baru ──────────
+  inputEl.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  });
+
+  // ─── Auto-resize textarea ─────────────────────────────────
+  inputEl.addEventListener("input", function () {
+    this.style.height = "auto";
+    this.style.height = Math.min(this.scrollHeight, 120) + "px";
+  });
+
+  // ─── Hapus chat ───────────────────────────────────────────
+  clearBtn.addEventListener("click", () => {
+    if (!chatHistory.length) return;
+    if (confirm("Hapus semua riwayat chat?")) {
+      messagesEl.innerHTML = "";
+      chatHistory = [];
+      // Tampilkan ulang welcome message
+      addBubble("ai", getWelcomeMessage());
+    }
+  });
+
+  // ─── Quick chips ──────────────────────────────────────────
+  document.querySelectorAll(".chip").forEach(chip => {
+    chip.addEventListener("click", () => sendMessage(chip.dataset.prompt));
+  });
+
+  // ─── Toast helper ─────────────────────────────────────────
+  function showToast(msg) {
+    const c = document.getElementById("toast-container");
+    const t = document.createElement("div");
+    t.className = "toast";
+    t.textContent = msg;
+    c.appendChild(t);
+    setTimeout(() => t.remove(), 2800);
+  }
+
+  // ─── Init: tampilkan pesan selamat datang ──────────────────
+  addBubble("ai", getWelcomeMessage());
+  inputEl.focus();
+  </script>
+</body>
+</html>

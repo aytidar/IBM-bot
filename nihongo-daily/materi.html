@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Materi — Nihongo Daily</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* ── Karakter grid tampil lebih rapat di mobile ── */
+    .char-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+      gap: .55rem;
+    }
+    .char-card {
+      background: var(--color-bg);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: .6rem .4rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .15s, box-shadow .15s;
+      position: relative;
+    }
+    .char-card:hover           { border-color: var(--color-accent); box-shadow: var(--shadow-sm); }
+    .char-card.done            { border-color: #a7f3d0; background: #f0fdf4; }
+    .char-card .char-jp        { font-family: var(--font-jp); font-size: 1.8rem; line-height: 1.2; }
+    .char-card .char-rom       { font-size: .72rem; color: var(--color-accent); font-style: italic; }
+    .char-card .char-arti      { font-size: .68rem; color: var(--color-muted); }
+    .char-card .done-check {
+      position: absolute;
+      top: 3px;
+      right: 5px;
+      font-size: .7rem;
+      color: #16a34a;
+    }
+
+    /* Romaji tersembunyi jika toggle OFF */
+    body.hide-romaji .char-rom,
+    body.hide-romaji .romaji-text,
+    body.hide-romaji .ai-romaji { display: none; }
+
+    /* Kosakata list */
+    .vocab-list { display: flex; flex-direction: column; gap: .55rem; }
+    .vocab-item {
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: .75rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: .75rem;
+      flex-wrap: wrap;
+      transition: border-color .15s;
+    }
+    .vocab-item:hover   { border-color: var(--color-accent); }
+    .vocab-item.done    { border-color: #a7f3d0; background: #f0fdf4; }
+    .vocab-info         { flex: 1; min-width: 120px; }
+    .vocab-jp           { font-family: var(--font-jp); font-size: 1.3rem; }
+    .vocab-rom          { font-size: .85rem; color: var(--color-accent); font-style: italic; }
+    .vocab-arti         { font-size: .85rem; color: var(--color-muted); }
+    .vocab-badge        { flex-shrink: 0; }
+
+    /* Grammar card */
+    .grammar-card {
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      margin-bottom: .75rem;
+      overflow: hidden;
+    }
+    .grammar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: .9rem 1.1rem;
+      cursor: pointer;
+      gap: .5rem;
+    }
+    .grammar-header:hover { background: var(--color-surface2); }
+    .grammar-body {
+      padding: 0 1.1rem 1rem;
+      border-top: 1px solid var(--color-border);
+    }
+    .grammar-pola {
+      background: var(--color-surface);
+      border-radius: var(--radius-sm);
+      padding: .45rem .75rem;
+      font-size: .9rem;
+      font-family: monospace;
+      margin: .6rem 0;
+      word-break: break-all;
+    }
+    .grammar-contoh-item {
+      border-left: 3px solid var(--color-accent);
+      padding: .4rem .75rem;
+      margin: .4rem 0;
+      background: var(--color-surface2);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    }
+
+    /* Percakapan */
+    .percakapan-card {
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.1rem;
+      margin-bottom: .75rem;
+    }
+
+    /* Tab konten */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Chevron ikon */
+    .chevron {
+      transition: transform .2s;
+      font-style: normal;
+      font-size: .9rem;
+      color: var(--color-muted);
+    }
+    .chevron.open { transform: rotate(180deg); }
+  </style>
+</head>
+<body>
+
+  <!-- TOP NAV -->
+  <nav class="top-nav">
+    <div class="container nav-inner">
+      <a href="index.html" class="logo">日本語 <span>Nihongo Daily</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html"    class="nav-link">🏠 Home</a></li>
+        <li><a href="materi.html"   class="nav-link">📚 Materi</a></li>
+        <li><a href="ai.html"       class="nav-link">🤖 AI Assistant</a></li>
+        <li><a href="quiz.html"     class="nav-link">✏️ Quiz</a></li>
+        <li><a href="progress.html" class="nav-link">📊 Progress</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="container page-content">
+
+    <!-- Judul + toggle romaji -->
+    <div class="section-header mb-2">
+      <h1 style="font-size:1.4rem">📚 Materi</h1>
+      <label class="toggle-romaji-wrap">
+        Romaji
+        <label class="toggle-switch">
+          <input type="checkbox" id="toggle-romaji" checked />
+          <span class="toggle-slider"></span>
+        </label>
+      </label>
+    </div>
+
+    <!-- Filter Level -->
+    <div class="filter-bar" id="filter-level">
+      <button class="filter-btn active" data-level="semua">Semua</button>
+      <button class="filter-btn" data-level="pemula">🟢 Pemula</button>
+      <button class="filter-btn" data-level="menengah">🟣 Menengah</button>
+    </div>
+
+    <!-- ═══ TAB NAVIGASI KATEGORI ═══════════════════════════ -->
+    <div class="filter-bar" id="tab-bar" style="margin-bottom:.5rem;border-bottom:1px solid var(--color-border);padding-bottom:.75rem;">
+      <button class="filter-btn active" data-tab="hiragana">Hiragana</button>
+      <button class="filter-btn" data-tab="katakana">Katakana</button>
+      <button class="filter-btn" data-tab="salam">Salam</button>
+      <button class="filter-btn" data-tab="angka">Angka</button>
+      <button class="filter-btn" data-tab="kosakata">Kosakata</button>
+      <button class="filter-btn" data-tab="grammar">Tata Bahasa</button>
+      <button class="filter-btn" data-tab="kanji">Kanji</button>
+      <button class="filter-btn" data-tab="percakapan">Percakapan</button>
+    </div>
+
+    <!-- Progress selesai -->
+    <div id="progress-bar-wrap" style="margin-bottom:1rem;">
+      <div style="display:flex;justify-content:space-between;font-size:.85rem;margin-bottom:.3rem;">
+        <span style="color:var(--color-muted)">Materi selesai</span>
+        <span id="persen-selesai" style="font-weight:700;color:var(--color-accent)">0%</span>
+      </div>
+      <div class="quiz-progress-bar">
+        <div class="quiz-progress-fill" id="persen-fill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         TAB: HIRAGANA
+    ═══════════════════════════════════════════════════ -->
+    <div id="tab-hiragana" class="tab-content active" data-level-tag="pemula">
+      <div class="section-header mb-1">
+        <h2 class="section-title">あ Hiragana <span class="badge badge-pemula ml-1">Pemula</span></h2>
+        <button class="btn btn-sm btn-secondary" id="btn-selesai-all-hiragana">Tandai Semua</button>
+      </div>
+      <p class="text-muted mb-2" style="font-size:.9rem">46 karakter dasar — sistem penulisan utama bahasa Jepang.</p>
+      <div class="char-grid" id="grid-hiragana"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         TAB: KATAKANA
+    ═══════════════════════════════════════════════════ -->
+    <div id="tab-katakana" class="tab-content" data-level-tag="pemula">
+      <div class="section-header mb-1">
+        <h2 class="section-title">ア Katakana <span class="badge badge-pemula">Pemula</span></h2>
+        <button class="btn btn-sm btn-secondary" id="btn-selesai-all-katakana">Tandai Semua</button>
+      </div>
+      <p class="text-muted mb-2" style="font-size:.9rem">46 karakter — digunakan untuk kata serapan dan nama asing.</p>
+      <div class="char-grid" id="grid-katakana"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         TAB: SALAM
+    ═══════════════════════════════════════════════════ -->
+    <div id="tab-salam" class="tab-content" data-level-tag="pemula">
+      <div class="section-header mb-1">
+        <h2 class="section-title">👋 Salam &amp; Ungkapan <span class="badge badge-pemula">Pemula</span></h2>
+      </div>
+      <div class="vocab-list" id="list-salam"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         TAB: ANGKA
+    ═══════════════════════════════════════════════════ -->
+    <div id="tab-angka" class="tab-content" data-level-tag="pemula">
+      <div class="section-header mb-1">
+        <h2 class="section-title">🔢 Angka <span class="badge badge-pemula">Pemula</span></h2>
+      </div>
+      <div class="vocab-list" id="list-angka"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         TAB: KOSAKATA
+    ═══════════════════════════════════════════════════ -->
+    <div id="tab-kosakata" class="tab-content" data-level-tag="semua">
+      <div class="section-header mb-1">
+        <h2 class="section-title">📖 Kosakata</h2>
+        <div class="filter-bar" id="filter-kosakata" style="margin-bottom:0">
+          <button class="filter-btn active" data-kat="semua">Semua</button>
+          <button class="filter-btn" data-kat="kata kerja">Kata Kerja</button>
+          <button class="filter-btn" data-kat="kata sifat">Kata Sifat</button>
+          <button class="filter-btn" data-kat="benda">Benda</button>
+          <button class="filter-btn" data-kat="orang">Orang</button>
+        </div>
+      </div>
+      <div class="vocab-list" id="list-kosakata"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         TAB: TATA BAHASA
+    ═══════════════════════════════════════════════════ -->
+    <div id="tab-grammar" class="tab-content" data-level-tag="semua">
+      <div class="section-header mb-1">
+        <h2 class="section-title">📝 Tata Bahasa</h2>
+      </div>
+      <div id="list-grammar"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         TAB: KANJI
+    ═══════════════════════════════════════════════════ -->
+    <div id="tab-kanji" class="tab-content" data-level-tag="menengah">
+      <div class="section-header mb-1">
+        <h2 class="section-title">漢 Kanji Dasar <span class="badge badge-menengah">Menengah</span></h2>
+        <button class="btn btn-sm btn-secondary" id="btn-selesai-all-kanji">Tandai Semua</button>
+      </div>
+      <p class="text-muted mb-2" style="font-size:.9rem">15 kanji paling umum beserta on'yomi dan kun'yomi.</p>
+      <div class="vocab-list" id="list-kanji"></div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════
+         TAB: PERCAKAPAN
+    ═══════════════════════════════════════════════════ -->
+    <div id="tab-percakapan" class="tab-content" data-level-tag="menengah">
+      <div class="section-header mb-1">
+        <h2 class="section-title">💬 Percakapan <span class="badge badge-menengah">Menengah</span></h2>
+      </div>
+      <div id="list-percakapan"></div>
+    </div>
+
+  </main>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <a href="index.html"    class="nav-link"><span class="nav-icon">🏠</span>Home</a>
+    <a href="materi.html"   class="nav-link"><span class="nav-icon">📚</span>Materi</a>
+    <a href="ai.html"       class="nav-link"><span class="nav-icon">🤖</span>AI</a>
+    <a href="quiz.html"     class="nav-link"><span class="nav-icon">✏️</span>Quiz</a>
+    <a href="progress.html" class="nav-link"><span class="nav-icon">📊</span>Progress</a>
+  </nav>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="config.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+  // ══════════════════════════════════════════════════════════
+  //  materi.html — logic halaman
+  // ══════════════════════════════════════════════════════════
+
+  // ─── Helper: tampilkan toast notifikasi ──────────────────
+  function showToast(msg) {
+    const c = document.getElementById("toast-container");
+    const t = document.createElement("div");
+    t.className = "toast";
+    t.textContent = msg;
+    c.appendChild(t);
+    setTimeout(() => t.remove(), 2800);
+  }
+
+  // ─── Hitung total item materi (semua) ────────────────────
+  function totalMateri() {
+    return (
+      DATA_HIRAGANA.length +
+      DATA_KATAKANA.length +
+      DATA_SALAM.length +
+      DATA_ANGKA.length +
+      DATA_KOSAKATA.length +
+      DATA_GRAMMAR.length +
+      DATA_KANJI.length
+    );
+  }
+
+  // ─── Update progress bar ─────────────────────────────────
+  function updateProgressBar() {
+    const pct = persenMateriSelesai(totalMateri());
+    document.getElementById("persen-selesai").textContent = pct + "%";
+    document.getElementById("persen-fill").style.width    = pct + "%";
+  }
+
+  // ─── Render karakter grid (hiragana / katakana) ───────────
+  function renderCharGrid(containerId, dataset, prefix) {
+    const grid = document.getElementById(containerId);
+    grid.innerHTML = "";
+    dataset.forEach((item, i) => {
+      const id   = prefix + "_" + i;
+      const done = sudahSelesai(id);
+      const card = document.createElement("div");
+      card.className = "char-card" + (done ? " done" : "");
+      card.dataset.id = id;
+      card.innerHTML = `
+        <div class="char-jp">${item.jp}</div>
+        <div class="char-rom romaji-text">${item.romaji}</div>
+        <div class="char-arti">${item.arti}</div>
+        ${done ? '<span class="done-check">✓</span>' : ""}
+      `;
+      // Klik = toggle selesai
+      card.addEventListener("click", () => {
+        if (sudahSelesai(id)) {
+          hapusTandaiSelesai(id);
+          card.classList.remove("done");
+          card.querySelector(".done-check")?.remove();
+          showToast("Tanda selesai dihapus");
+        } else {
+          tandaiSelesai(id);
+          card.classList.add("done");
+          if (!card.querySelector(".done-check")) {
+            const ck = document.createElement("span");
+            ck.className = "done-check";
+            ck.textContent = "✓";
+            card.appendChild(ck);
+          }
+          showToast("✅ Ditandai selesai");
+        }
+        updateProgressBar();
+      });
+      grid.appendChild(card);
+    });
+  }
+
+  // ─── Render vocab list (salam, angka, kosakata) ──────────
+  function renderVocabList(containerId, dataset, prefix, showBadge) {
+    const list = document.getElementById(containerId);
+    list.innerHTML = "";
+    dataset.forEach((item, i) => {
+      const id   = prefix + "_" + i;
+      const done = sudahSelesai(id);
+      const el   = document.createElement("div");
+      el.className  = "vocab-item" + (done ? " done" : "");
+      el.dataset.id = id;
+      el.innerHTML  = `
+        <div class="vocab-info">
+          <div class="vocab-jp jp-text" style="font-size:1.3rem">${item.jp}</div>
+          <div class="vocab-rom romaji-text">${item.romaji}</div>
+          <div class="vocab-arti">${item.arti}</div>
+        </div>
+        <div class="vocab-badge" style="display:flex;flex-direction:column;align-items:flex-end;gap:.35rem;">
+          ${showBadge && item.level ? `<span class="badge badge-${item.level}">${item.level}</span>` : ""}
+          ${showBadge && item.kategori ? `<span class="badge badge-accent">${item.kategori}</span>` : ""}
+          <button class="btn btn-sm ${done ? "btn-done" : "btn-secondary"} btn-tandai"
+            data-id="${id}" title="${done ? "Hapus tanda" : "Tandai selesai"}">
+            ${done ? "✅ Selesai" : "Tandai"}
+          </button>
+        </div>
+      `;
+      // Tombol tandai
+      el.querySelector(".btn-tandai").addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleSelesai(id, el, e.target);
+      });
+      list.appendChild(el);
+    });
+  }
+
+  function toggleSelesai(id, elItem, btn) {
+    if (sudahSelesai(id)) {
+      hapusTandaiSelesai(id);
+      elItem.classList.remove("done");
+      btn.className = "btn btn-sm btn-secondary btn-tandai";
+      btn.textContent = "Tandai";
+      showToast("Tanda selesai dihapus");
+    } else {
+      tandaiSelesai(id);
+      elItem.classList.add("done");
+      btn.className = "btn btn-sm btn-done btn-tandai";
+      btn.textContent = "✅ Selesai";
+      showToast("✅ Ditandai selesai");
+    }
+    updateProgressBar();
+  }
+
+  // ─── Render kosakata dengan filter ───────────────────────
+  let currentKat = "semua";
+  let currentLevel = "semua";
+
+  function renderKosakata() {
+    let data = DATA_KOSAKATA;
+    if (currentLevel !== "semua") data = data.filter(d => d.level === currentLevel);
+    if (currentKat  !== "semua") data = data.filter(d => d.kategori === currentKat);
+    // Buat mapping index ke id asli
+    const list = document.getElementById("list-kosakata");
+    list.innerHTML = "";
+    data.forEach((item) => {
+      const i    = DATA_KOSAKATA.indexOf(item);
+      const id   = "kosakata_" + i;
+      const done = sudahSelesai(id);
+      const el   = document.createElement("div");
+      el.className = "vocab-item" + (done ? " done" : "");
+      el.innerHTML = `
+        <div class="vocab-info">
+          <div class="vocab-jp jp-text" style="font-size:1.3rem">${item.jp}</div>
+          <div class="vocab-rom romaji-text">${item.romaji}</div>
+          <div class="vocab-arti">${item.arti}</div>
+        </div>
+        <div class="vocab-badge" style="display:flex;flex-direction:column;align-items:flex-end;gap:.35rem;">
+          <span class="badge badge-${item.level}">${item.level}</span>
+          <span class="badge badge-accent">${item.kategori}</span>
+          <button class="btn btn-sm ${done ? "btn-done" : "btn-secondary"} btn-tandai" data-id="${id}">
+            ${done ? "✅ Selesai" : "Tandai"}
+          </button>
+        </div>
+      `;
+      el.querySelector(".btn-tandai").addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleSelesai(id, el, e.target);
+      });
+      list.appendChild(el);
+    });
+  }
+
+  // ─── Render grammar ───────────────────────────────────────
+  function renderGrammar(levelFilter) {
+    const list = document.getElementById("list-grammar");
+    list.innerHTML = "";
+    let data = DATA_GRAMMAR;
+    if (levelFilter !== "semua") data = data.filter(g => g.level === levelFilter);
+    data.forEach((gr, i) => {
+      const id   = "grammar_" + i;
+      const done = sudahSelesai(id);
+      const card = document.createElement("div");
+      card.className = "grammar-card";
+      const contohHTML = gr.contoh.map(c => `
+        <div class="grammar-contoh-item">
+          <div class="vocab-jp jp-text" style="font-size:1.1rem">${c.jp}</div>
+          <div class="vocab-rom romaji-text">${c.romaji}</div>
+          <div class="vocab-arti">${c.arti}</div>
+        </div>`).join("");
+      card.innerHTML = `
+        <div class="grammar-header" data-open="false">
+          <div>
+            <span class="badge badge-${gr.level}" style="margin-right:.5rem">${gr.level}</span>
+            <b>${gr.judul}</b>
+          </div>
+          <div style="display:flex;align-items:center;gap:.5rem">
+            <button class="btn btn-sm ${done ? "btn-done" : "btn-secondary"} btn-tandai" data-id="${id}">
+              ${done ? "✅" : "Tandai"}
+            </button>
+            <i class="chevron">▼</i>
+          </div>
+        </div>
+        <div class="grammar-body hidden">
+          <div class="grammar-pola">${gr.pola}</div>
+          <p style="font-size:.9rem;color:var(--color-muted);margin-bottom:.5rem">${gr.penjelasan}</p>
+          <b style="font-size:.9rem">Contoh:</b>
+          ${contohHTML}
+        </div>
+      `;
+      // Toggle buka/tutup
+      card.querySelector(".grammar-header").addEventListener("click", (e) => {
+        if (e.target.closest("button")) return;
+        const body = card.querySelector(".grammar-body");
+        const chv  = card.querySelector(".chevron");
+        const open = card.querySelector(".grammar-header").dataset.open === "true";
+        body.classList.toggle("hidden", open);
+        chv.classList.toggle("open", !open);
+        card.querySelector(".grammar-header").dataset.open = !open;
+      });
+      // Tandai selesai
+      card.querySelector(".btn-tandai").addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleSelesai(id, card, e.target);
+      });
+      list.appendChild(card);
+    });
+  }
+
+  // ─── Render kanji ─────────────────────────────────────────
+  function renderKanji() {
+    const list = document.getElementById("list-kanji");
+    list.innerHTML = "";
+    DATA_KANJI.forEach((k, i) => {
+      const id   = "kanji_" + i;
+      const done = sudahSelesai(id);
+      const el   = document.createElement("div");
+      el.className = "vocab-item" + (done ? " done" : "");
+      el.innerHTML = `
+        <div class="vocab-info">
+          <div style="display:flex;align-items:baseline;gap:.5rem">
+            <span style="font-family:var(--font-jp);font-size:2.2rem">${k.jp}</span>
+            <span class="romaji-text">${k.romaji}</span>
+          </div>
+          <div class="vocab-arti">${k.arti}</div>
+          <div style="font-size:.8rem;color:var(--color-muted);margin-top:.2rem">
+            On: <b>${k.onyomi}</b> &nbsp;|&nbsp; Kun: <b>${k.kunyomi}</b>
+          </div>
+        </div>
+        <button class="btn btn-sm ${done ? "btn-done" : "btn-secondary"} btn-tandai" data-id="${id}">
+          ${done ? "✅ Selesai" : "Tandai"}
+        </button>
+      `;
+      el.querySelector(".btn-tandai").addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleSelesai(id, el, e.target);
+      });
+      list.appendChild(el);
+    });
+  }
+
+  // ─── Render percakapan ────────────────────────────────────
+  function renderPercakapan() {
+    const list = document.getElementById("list-percakapan");
+    list.innerHTML = "";
+    DATA_PERCAKAPAN.forEach((p) => {
+      const dialogHTML = p.dialog.map(d => `
+        <div class="dialog-item">
+          <div class="dialog-speaker">${d.speaker}</div>
+          <div class="dialog-content">
+            <div class="jp">${d.jp}</div>
+            <div class="rom romaji-text">${d.romaji}</div>
+            <div class="id text-muted" style="font-size:.85rem">${d.arti}</div>
+          </div>
+        </div>`).join("");
+      const card = document.createElement("div");
+      card.className = "percakapan-card";
+      card.innerHTML = `<h3 style="margin-bottom:.75rem">${p.judul}</h3>${dialogHTML}`;
+      list.appendChild(card);
+    });
+  }
+
+  // ─── Tab switching ────────────────────────────────────────
+  let activeTab = "hiragana";
+
+  function switchTab(tab) {
+    activeTab = tab;
+    document.querySelectorAll(".tab-content").forEach(el => el.classList.remove("active"));
+    document.querySelectorAll("#tab-bar .filter-btn").forEach(btn => btn.classList.remove("active"));
+    const tc = document.getElementById("tab-" + tab);
+    if (tc) tc.classList.add("active");
+    document.querySelector(`#tab-bar [data-tab="${tab}"]`)?.classList.add("active");
+    // Re-render konten aktif
+    if (tab === "kosakata") renderKosakata();
+    if (tab === "grammar")  renderGrammar(currentLevel);
+    updateProgressBar();
+  }
+
+  document.querySelectorAll("#tab-bar .filter-btn").forEach(btn => {
+    btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+  });
+
+  // ─── Filter level ──────────────────────────────────────────
+  document.querySelectorAll("#filter-level .filter-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("#filter-level .filter-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentLevel = btn.dataset.level;
+      // Sembunyikan tab yang tidak sesuai level
+      document.querySelectorAll(".tab-content").forEach(tc => {
+        const tag = tc.dataset.levelTag;
+        if (currentLevel === "semua" || tag === "semua" || tag === currentLevel) {
+          // tab tersedia — pastikan tombol tab tampil
+          const tabId = tc.id.replace("tab-", "");
+          document.querySelector(`[data-tab="${tabId}"]`)?.removeAttribute("style");
+        } else {
+          // tab tidak relevan — hidden
+          const tabId = tc.id.replace("tab-", "");
+          const btn   = document.querySelector(`[data-tab="${tabId}"]`);
+          if (btn) btn.style.display = "none";
+        }
+      });
+      // Jika tab aktif tersembunyi, switch ke tab pertama yg visible
+      const visibleBtns = [...document.querySelectorAll("#tab-bar .filter-btn")].filter(b => b.style.display !== "none");
+      if (!visibleBtns.some(b => b.dataset.tab === activeTab)) {
+        switchTab(visibleBtns[0]?.dataset.tab || "hiragana");
+      } else {
+        if (activeTab === "kosakata") renderKosakata();
+        if (activeTab === "grammar")  renderGrammar(currentLevel);
+      }
+    });
+  });
+
+  // ─── Filter kategori kosakata ─────────────────────────────
+  document.querySelectorAll("#filter-kosakata .filter-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll("#filter-kosakata .filter-btn").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      currentKat = btn.dataset.kat;
+      renderKosakata();
+    });
+  });
+
+  // ─── Tandai semua hiragana / katakana / kanji ─────────────
+  document.getElementById("btn-selesai-all-hiragana").addEventListener("click", () => {
+    DATA_HIRAGANA.forEach((_, i) => tandaiSelesai("hiragana_" + i));
+    renderCharGrid("grid-hiragana", DATA_HIRAGANA, "hiragana");
+    updateProgressBar();
+    showToast("✅ Semua hiragana ditandai selesai");
+  });
+  document.getElementById("btn-selesai-all-katakana").addEventListener("click", () => {
+    DATA_KATAKANA.forEach((_, i) => tandaiSelesai("katakana_" + i));
+    renderCharGrid("grid-katakana", DATA_KATAKANA, "katakana");
+    updateProgressBar();
+    showToast("✅ Semua katakana ditandai selesai");
+  });
+  document.getElementById("btn-selesai-all-kanji").addEventListener("click", () => {
+    DATA_KANJI.forEach((_, i) => tandaiSelesai("kanji_" + i));
+    renderKanji();
+    updateProgressBar();
+    showToast("✅ Semua kanji ditandai selesai");
+  });
+
+  // ─── Toggle Romaji ────────────────────────────────────────
+  document.getElementById("toggle-romaji").addEventListener("change", function () {
+    document.body.classList.toggle("hide-romaji", !this.checked);
+  });
+
+  // ─── URL param: buka tab langsung ─────────────────────────
+  function initFromURL() {
+    const params = new URLSearchParams(window.location.search);
+    const tab    = params.get("tab");
+    if (tab) switchTab(tab);
+  }
+
+  // ─── Initial render ───────────────────────────────────────
+  renderCharGrid("grid-hiragana", DATA_HIRAGANA, "hiragana");
+  renderCharGrid("grid-katakana", DATA_KATAKANA, "katakana");
+  renderVocabList("list-salam", DATA_SALAM,  "salam",  false);
+  renderVocabList("list-angka", DATA_ANGKA,  "angka",  false);
+  renderKosakata();
+  renderGrammar("semua");
+  renderKanji();
+  renderPercakapan();
+  updateProgressBar();
+  initFromURL();
+  </script>
+</body>
+</html>

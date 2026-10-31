@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Progress — Nihongo Daily</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    /* Ring chart sederhana dengan conic-gradient */
+    .ring-chart {
+      width: 110px;
+      height: 110px;
+      border-radius: 50%;
+      background: conic-gradient(var(--color-accent) 0% var(--pct, 0%), var(--color-border) var(--pct, 0%) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .ring-chart::before {
+      content: "";
+      position: absolute;
+      width: 78px;
+      height: 78px;
+      background: var(--color-bg);
+      border-radius: 50%;
+    }
+    .ring-chart-label {
+      position: relative;
+      z-index: 1;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--color-accent);
+    }
+    .ring-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .4rem;
+    }
+    .ring-wrap small { font-size: .8rem; color: var(--color-muted); text-align: center; }
+  </style>
+</head>
+<body>
+
+  <!-- TOP NAV -->
+  <nav class="top-nav">
+    <div class="container nav-inner">
+      <a href="index.html" class="logo">日本語 <span>Nihongo Daily</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html"    class="nav-link">🏠 Home</a></li>
+        <li><a href="materi.html"   class="nav-link">📚 Materi</a></li>
+        <li><a href="ai.html"       class="nav-link">🤖 AI Assistant</a></li>
+        <li><a href="quiz.html"     class="nav-link">✏️ Quiz</a></li>
+        <li><a href="progress.html" class="nav-link">📊 Progress</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="container page-content">
+
+    <h1 style="font-size:1.4rem;margin-bottom:1.25rem">📊 Progress Belajarmu</h1>
+
+    <!-- ── Ringkasan visual ──────────────────────────────── -->
+    <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.5rem">
+      <div class="ring-wrap">
+        <div class="ring-chart" id="ring-materi">
+          <span class="ring-chart-label" id="ring-materi-label">0%</span>
+        </div>
+        <small>Materi Selesai</small>
+      </div>
+      <div class="ring-wrap">
+        <div class="ring-chart" id="ring-skor">
+          <span class="ring-chart-label" id="ring-skor-label">0%</span>
+        </div>
+        <small>Rata-rata Skor Quiz</small>
+      </div>
+    </div>
+
+    <!-- ── Stat Cards ────────────────────────────────────── -->
+    <div class="stat-grid mb-2">
+      <div class="stat-card">
+        <div class="stat-number" id="stat-materi">0</div>
+        <div class="stat-label">Materi Selesai</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="stat-streak">0</div>
+        <div class="stat-label">🔥 Hari Streak</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="stat-kuis">0</div>
+        <div class="stat-label">Quiz Dimainkan</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-number" id="stat-avg">0%</div>
+        <div class="stat-label">Rata-rata Skor</div>
+      </div>
+    </div>
+
+    <!-- ── Tanggal mulai ─────────────────────────────────── -->
+    <p style="font-size:.875rem;color:var(--color-muted);margin-bottom:1rem">
+      Mulai belajar sejak: <b id="tgl-mulai">—</b>
+    </p>
+
+    <hr class="divider" />
+
+    <!-- ── Riwayat Kuis ──────────────────────────────────── -->
+    <div class="section-header mb-1">
+      <span class="section-title">Riwayat Quiz</span>
+      <span id="badge-kuis-count" class="badge badge-accent">0</span>
+    </div>
+    <div id="history-list" class="history-list mb-2">
+      <p class="text-muted" style="font-size:.9rem">Belum ada riwayat kuis.</p>
+    </div>
+
+    <hr class="divider" />
+
+    <!-- ── Ekspor / Impor / Reset ────────────────────────── -->
+    <div class="section-header mb-1">
+      <span class="section-title">⚙️ Kelola Data</span>
+    </div>
+    <p style="font-size:.88rem;color:var(--color-muted);margin-bottom:.75rem">
+      Progress hanya tersimpan di browser ini. Ekspor secara berkala sebagai cadangan.
+    </p>
+    <div style="display:flex;flex-wrap:wrap;gap:.65rem">
+      <button class="btn btn-primary btn-sm" id="btn-ekspor">⬇️ Ekspor Progress</button>
+      <label class="btn btn-secondary btn-sm" style="cursor:pointer">
+        ⬆️ Impor Progress
+        <input type="file" id="file-impor" accept=".json" style="display:none" />
+      </label>
+      <button class="btn btn-ghost btn-sm" id="btn-reset" style="color:var(--color-error);border-color:var(--color-error)">
+        🗑️ Reset Semua
+      </button>
+    </div>
+
+  </main>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <a href="index.html"    class="nav-link"><span class="nav-icon">🏠</span>Home</a>
+    <a href="materi.html"   class="nav-link"><span class="nav-icon">📚</span>Materi</a>
+    <a href="ai.html"       class="nav-link"><span class="nav-icon">🤖</span>AI</a>
+    <a href="quiz.html"     class="nav-link"><span class="nav-icon">✏️</span>Quiz</a>
+    <a href="progress.html" class="nav-link"><span class="nav-icon">📊</span>Progress</a>
+  </nav>
+
+  <div class="toast-container" id="toast-container"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="config.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+  // ══════════════════════════════════════════════════════════
+  //  progress.html — logic halaman
+  // ══════════════════════════════════════════════════════════
+
+  function showToast(msg) {
+    const c = document.getElementById("toast-container");
+    const t = document.createElement("div");
+    t.className = "toast";
+    t.textContent = msg;
+    c.appendChild(t);
+    setTimeout(() => t.remove(), 2800);
+  }
+
+  // ─── Hitung total item materi ─────────────────────────────
+  function totalMateri() {
+    return (
+      DATA_HIRAGANA.length +
+      DATA_KATAKANA.length +
+      DATA_SALAM.length +
+      DATA_ANGKA.length +
+      DATA_KOSAKATA.length +
+      DATA_GRAMMAR.length +
+      DATA_KANJI.length
+    );
+  }
+
+  // ─── Render halaman progress ──────────────────────────────
+  function renderProgress() {
+    const p     = getProgress();
+    const total = totalMateri();
+    const pct   = persenMateriSelesai(total);
+    const avg   = rataRataSkor();
+    const streak = getStreak();
+
+    // Ring charts
+    setRing("ring-materi", "ring-materi-label", pct);
+    setRing("ring-skor",   "ring-skor-label",   avg);
+
+    // Stat cards
+    document.getElementById("stat-materi").textContent = p.materiSelesai.length + " / " + total;
+    document.getElementById("stat-streak").textContent = streak;
+    document.getElementById("stat-kuis").textContent   = p.riwayatKuis.length;
+    document.getElementById("stat-avg").textContent    = avg + "%";
+
+    // Tanggal mulai
+    document.getElementById("tgl-mulai").textContent = formatTanggal(p.mulaiDari);
+
+    // Riwayat kuis
+    const histEl = document.getElementById("history-list");
+    document.getElementById("badge-kuis-count").textContent = p.riwayatKuis.length;
+    if (!p.riwayatKuis.length) {
+      histEl.innerHTML = `<p class="text-muted" style="font-size:.9rem">Belum ada riwayat kuis. <a href="quiz.html">Mulai Quiz →</a></p>`;
+    } else {
+      histEl.innerHTML = "";
+      // Tampil terbaru dulu (slice + reverse)
+      [...p.riwayatKuis].reverse().slice(0, 20).forEach(r => {
+        const skorPct = Math.round((r.skor / r.total) * 100);
+        const item = document.createElement("div");
+        item.className = "history-item";
+        item.innerHTML = `
+          <div>
+            <div style="font-weight:600;font-size:.92rem">${r.kategori.charAt(0).toUpperCase() + r.kategori.slice(1)}</div>
+            <div style="font-size:.8rem;color:var(--color-muted)">${formatTanggal(r.tanggal)} • ${r.level}</div>
+          </div>
+          <div class="history-score">${r.skor}/${r.total} <span style="color:var(--color-muted);font-weight:400">(${skorPct}%)</span></div>
+        `;
+        histEl.appendChild(item);
+      });
+    }
+  }
+
+  // ─── Ring chart helper ────────────────────────────────────
+  function setRing(ringId, labelId, pct) {
+    const ring  = document.getElementById(ringId);
+    const label = document.getElementById(labelId);
+    ring.style.setProperty("--pct", pct + "%");
+    label.textContent = pct + "%";
+  }
+
+  // ─── Ekspor ───────────────────────────────────────────────
+  document.getElementById("btn-ekspor").addEventListener("click", () => {
+    eksporProgress();
+    showToast("✅ File progress berhasil diunduh");
+  });
+
+  // ─── Impor ────────────────────────────────────────────────
+  document.getElementById("file-impor").addEventListener("change", function () {
+    if (!this.files[0]) return;
+    if (!confirm("Impor akan menggantikan progress saat ini. Lanjutkan?")) {
+      this.value = "";
+      return;
+    }
+    imporProgress(this.files[0], () => {
+      this.value = "";
+      renderProgress();
+      showToast("✅ Progress berhasil diimpor");
+    });
+  });
+
+  // ─── Reset ────────────────────────────────────────────────
+  document.getElementById("btn-reset").addEventListener("click", () => {
+    if (!confirm("⚠️ Semua progress akan dihapus permanen. Yakin?")) return;
+    resetProgress();
+    renderProgress();
+    showToast("🗑️ Progress direset");
+  });
+
+  // ─── Init ─────────────────────────────────────────────────
+  perbaruiStreak();
+  renderProgress();
+  </script>
+</body>
+</html>
